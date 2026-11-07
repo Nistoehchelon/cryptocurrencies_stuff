@@ -23,7 +23,7 @@ pub fn derive_ltc_bip84_address(master_seed: &str, index: u64) -> Result<String,
 
     // 2. Build the master extended private key from the 64-byte seed
     let master =
-        bip32::XPrv::new(seed).map_err(|e| format!("Master key derivation failed: {e}"))?;
+        bip32::XPrv::new(&seed).map_err(|e| format!("Master key derivation failed: {e}"))?;
 
     // 3. Derive m/84'/2'/0'/0/{index} step by step
     let child = master
