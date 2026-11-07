@@ -23,7 +23,7 @@ pub fn derive_ltc_bip84_address(master_seed: &str, index: u64) -> Result<String,
 
     // 2. Build the master extended private key from the 64-byte seed
     let master =
-        bip32::XPrv::new(&seed).map_err(|e| format!("Master key derivation failed: {e}"))?;
+        bip32::XPrv::new(seed).map_err(|e| format!("Master key derivation failed: {e}"))?;
 
     // 3. Derive m/84'/2'/0'/0/{index} step by step
     let child = master
@@ -42,8 +42,8 @@ pub fn derive_ltc_bip84_address(master_seed: &str, index: u64) -> Result<String,
     let pubkey_bytes = child.public_key().to_bytes();
 
     // 5. Hash160 = RIPEMD160(SHA256(pubkey))
-    let sha256 = Sha256::digest(&pubkey_bytes);
-    let hash160 = Ripemd160::digest(&sha256);
+    let sha256 = Sha256::digest(pubkey_bytes);
+    let hash160 = Ripemd160::digest(sha256);
 
     // 6. Encode as bech32 P2WPKH ("ltc1q…")
     // bech32 v0.11: encode takes an Hrp and raw witness program bytes;
