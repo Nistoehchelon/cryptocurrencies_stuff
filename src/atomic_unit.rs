@@ -33,3 +33,23 @@ impl<C: CryptocurrencyConfig> AtomicUnit<C> {
         format!("{}.{}", whole, frac_str)
     }
 }
+
+impl<C: CryptocurrencyConfig> PartialEq for AtomicUnit<C> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl<C: CryptocurrencyConfig> Eq for AtomicUnit<C> {}
+
+impl<C: CryptocurrencyConfig> PartialOrd for AtomicUnit<C> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<C: CryptocurrencyConfig> Ord for AtomicUnit<C> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.0.cmp(&other.0)
+    }
+}
