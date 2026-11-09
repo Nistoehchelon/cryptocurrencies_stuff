@@ -60,7 +60,7 @@ pub enum ArithmeticError {
 }
 
 impl<C: CryptocurrencyConfig> AtomicUnit<C> {
-    pub fn checked_sub_result(self, rhs: Self) -> Result<Self, ArithmeticError> {
+    pub fn checked_sub_result(self, rhs: Self) -> anyhow::Result<Self, ArithmeticError> {
         self.0
             .checked_sub(rhs.0)
             .map(AtomicUnit::from_atomic)
