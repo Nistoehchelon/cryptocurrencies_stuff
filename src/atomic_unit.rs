@@ -56,7 +56,6 @@ impl<C: CryptocurrencyConfig> Ord for AtomicUnit<C> {
 #[derive(Debug, PartialEq)]
 pub enum ArithmeticError {
     Overflow,
-    Underflow,
 }
 
 impl<C: CryptocurrencyConfig> AtomicUnit<C> {
@@ -64,6 +63,12 @@ impl<C: CryptocurrencyConfig> AtomicUnit<C> {
         self.0
             .checked_sub(rhs.0)
             .map(AtomicUnit::from_atomic)
-            .ok_or(ArithmeticError::Underflow)
+            .ok_or(ArithmeticError::Overflow)
+    }
+    pub fn checked_mul_result(self, rhs: Self) -> anyhow::Result<Self, ArithmeticError> {
+        self.0
+            .checked_mul(rhs.0)
+            .map(AtomicUnit::from_atomic)
+            .ok_or(ArithmeticError::Overflow)
     }
 }
