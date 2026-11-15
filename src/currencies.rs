@@ -1,24 +1,24 @@
-use crate::atomic_unit::{AtomicUnit, CryptocurrencyConfig};
+use crate::atomic_unit::{AtomicUnit, CurrencyConfig};
 
-pub type CryptoAtomicUnitRaw = u128;
-#[derive(Clone, Debug, derive_more::Display)]
-pub struct CryptoAtomicUnit(pub CryptoAtomicUnitRaw);
+pub type CurrencyAtomicUnitRaw = u128;
+#[derive(Clone, Debug, derive_more::Display, serde::Serialize, serde::Deserialize)]
+pub struct CurrencyAtomicUnit(pub CurrencyAtomicUnitRaw);
 
-impl CryptoAtomicUnit {
-    pub fn as_raw(&self) -> CryptoAtomicUnitRaw {
+impl CurrencyAtomicUnit {
+    pub fn as_raw(&self) -> CurrencyAtomicUnitRaw {
         self.0
     }
     pub fn from_u128(n: u128) -> Self {
         Self(n)
     }
-    pub fn from_u64(n: u64) ->  Self {
+    pub fn from_u64(n: u64) -> Self {
         Self(n.into())
     }
 }
 #[derive(Clone, Debug)]
 pub struct XMR;
-impl CryptocurrencyConfig for XMR {
-    const ATOMIC_PER_UNIT: CryptoAtomicUnit = CryptoAtomicUnit(1_000_000_000_000);
+impl CurrencyConfig for XMR {
+    const ATOMIC_UNITS_PER_ONE_WHOLE: CurrencyAtomicUnit = CurrencyAtomicUnit(1_000_000_000_000);
     const SYMBOL: &'static str = "XMR";
 }
 
@@ -26,16 +26,16 @@ pub type XMRAtomicUnit = AtomicUnit<XMR>;
 
 #[derive(Clone, Debug)]
 pub struct LTC;
-impl CryptocurrencyConfig for LTC {
-    const ATOMIC_PER_UNIT: CryptoAtomicUnit = CryptoAtomicUnit(100_000_000);
+impl CurrencyConfig for LTC {
+    const ATOMIC_UNITS_PER_ONE_WHOLE: CurrencyAtomicUnit = CurrencyAtomicUnit(100_000_000);
     const SYMBOL: &'static str = "LTC";
 }
 pub type LTCAtomicUnit = AtomicUnit<LTC>;
 
 #[derive(Clone, Debug)]
 pub struct XNO;
-impl CryptocurrencyConfig for XNO {
-    const ATOMIC_PER_UNIT: CryptoAtomicUnit = CryptoAtomicUnit(10u128.pow(30));
+impl CurrencyConfig for XNO {
+    const ATOMIC_UNITS_PER_ONE_WHOLE: CurrencyAtomicUnit = CurrencyAtomicUnit(10u128.pow(30));
     const SYMBOL: &'static str = "XNO";
 }
 
