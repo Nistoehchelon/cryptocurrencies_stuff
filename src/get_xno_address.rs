@@ -123,7 +123,7 @@ mod tests {
         while i < 10 {
             let addr = get_address_from_mnemonic_and_index(&mnemonic, index + i).unwrap();
             tracing::debug!("Addr: {addr}");
-            i = i + 1;
+            i += 1;
         }
     }
 }
