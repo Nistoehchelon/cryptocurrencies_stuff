@@ -1,6 +1,6 @@
 // cargo test -- --nocapture to show println!()
 
-use cryptocurrencies_stuff::ltc_get_address::get_address_from_mnemonic_and_index;
+use cryptocurrencies_stuff::get_ltc_address::get_address_from_mnemonic_and_index;
 
 #[test]
 pub fn test_ltc() {

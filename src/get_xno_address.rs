@@ -9,7 +9,7 @@ use curve25519_dalek::scalar::Scalar;
 //use hmac::{Hmac, Mac};
 //use sha2::Sha512;
 
-use crate::xno_get_address::NanoAddressFromMnemonicError::{EntropyToSeedError, MnemonicParseError};
+use crate::get_xno_address::NanoAddressFromMnemonicError::{EntropyToSeedError, MnemonicParseError};
 
 const NANO_ALPHABET: &[u8; 32] = b"13456789abcdefghijkmnopqrstuwxyz";
 
