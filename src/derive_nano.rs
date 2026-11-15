@@ -1,3 +1,6 @@
+use blake2::digest::consts::{U5, U32};
+use blake2::{Blake2b, Digest};
+
 use bip39::Mnemonic;
 use ed25519_dalek::SigningKey;
 use near_slip10::{BIP32Path, Curve, derive_key_from_path};
@@ -8,26 +11,29 @@ use crate::derive_nano::GetAddrAtIndexError::{
     DerivationFailed, DerivationPathParseError, MnemonicParseError,
 };
 
+#[derive(Debug, Clone)]
 pub enum GetAddrAtIndexError {
     MnemonicParseError(String),
     DerivationPathParseError(String),
     DerivationFailed(String),
 }
 
-const NANO_BASE32: &str = "13456789abcdefghijkmnopqrstuwxyz";
+const NANO_BASE32: &[u8; 32] = b"13456789abcdefghijkmnopqrstuwxyz";
 
 pub fn get_address_at_index(mnemonic_str: &str, index: u32) -> Result<String, GetAddrAtIndexError> {
     let mnemonic =
         Mnemonic::from_str(mnemonic_str).map_err(|e| MnemonicParseError(e.to_string()))?;
-    let seed = Zeroizing::new(mnemonic.to_seed(""));
+    let seed = Zeroizing::new(mnemonic.to_entropy());
 
-    let path = BIP32Path::from_str(&format!("m/44'/165'/{index}"))
-        .map_err(|e| DerivationPathParseError(e.to_string()))?;
+    type Blake2b256 = Blake2b<U32>;
+    let mut hasher = Blake2b256::new();
+    hasher.update(&*seed);
+    hasher.update(&index.to_be_bytes());
+    let hash = hasher.finalize();
 
-    let derived = derive_key_from_path(&*seed, Curve::Ed25519, &path)
-        .map_err(|e| DerivationFailed(e.to_string()))?;
+    let mut private_bytes = Zeroizing::new([0u8; 32]);
+    private_bytes.copy_from_slice(&hash);
 
-    let private_bytes = Zeroizing::new(derived.key);
     let signing_key = SigningKey::from_bytes(&*private_bytes);
     let public_key = signing_key.verifying_key();
 
@@ -35,9 +41,6 @@ pub fn get_address_at_index(mnemonic_str: &str, index: u32) -> Result<String, Ge
 }
 
 fn public_key_to_address(public_key: &[u8; 32]) -> String {
-    use blake2::digest::consts::U5;
-    use blake2::{Blake2b, Digest};
-
     let mut buf = [0u8; 33];
     buf[0] = 0x06;
     buf[1..].copy_from_slice(public_key);
@@ -59,7 +62,6 @@ fn public_key_to_address(public_key: &[u8; 32]) -> String {
     format!("nano_{}{}", body, checksum_encoded)
 }
 fn nano_base32_encode(data: &[u8]) -> String {
-    const ALPHABET: &[u8; 32] = b"13456789abcdefghijkmnopqrstuwxyz";
     let mut out = String::new();
     let mut buffer: u32 = 0;
     let mut bits: u32 = 0;
@@ -69,12 +71,12 @@ fn nano_base32_encode(data: &[u8]) -> String {
         while bits >= 5 {
             bits -= 5;
             let idx = ((buffer >> bits) & 0x1f) as usize;
-            out.push(ALPHABET[idx] as char);
+            out.push(NANO_BASE32[idx] as char);
         }
     }
     if bits > 0 {
         let idx = ((buffer << (5 - bits)) & 0x1f) as usize;
-        out.push(ALPHABET[idx] as char);
+        out.push(NANO_BASE32[idx] as char);
     }
     out
 }
