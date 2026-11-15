@@ -1,25 +1,5 @@
-//! Derive a Nano address from a BIP39 mnemonic + account index.
-//!
-//! Cargo.toml dependencies:
-//!
-//! [dependencies]
-//! bip39 = "2"
-//! blake2 = "0.10"
-//! curve25519-dalek = "4"
-//! hmac = "0.12"
-//! sha2 = "0.10"
-//!
-//! Two derivation schemes exist in the wild:
-//!
-//! 1. `nano_address_from_mnemonic`  (Nault / Natrium / official Nano wallets)
-//!    The 24-word mnemonic's entropy IS the 32-byte Nano seed.
-//!    private_key = Blake2b-256(seed || index_u32_be)
-//!
-//! 2. `nano_address_from_mnemonic_ledger` (Ledger / BIP44 style)
-//!    BIP39 seed (PBKDF2) -> SLIP-0010 ed25519 at m/44'/165'/index'
-//!
-//! Pick the one matching the wallet the mnemonic came from.
-
+// Made by Claude
+// Previous version was made by Deepseek but I could not get it to work
 use bip39::Mnemonic;
 use blake2::digest::consts::U32;
 use blake2::digest::{Update, VariableOutput};
@@ -180,3 +160,27 @@ mod tests {
         }
     }
 }
+
+// From Claude:
+
+// Derive a Nano address from a BIP39 mnemonic + account index.
+//
+// Cargo.toml dependencies:
+//
+// [dependencies]
+// bip39 = "2"
+// blake2 = "0.10"
+// curve25519-dalek = "4"
+// hmac = "0.12"
+// sha2 = "0.10"
+//
+// Two derivation schemes exist in the wild:
+//
+// 1. `nano_address_from_mnemonic`  (Nault / Natrium / official Nano wallets)
+//    The 24-word mnemonic's entropy IS the 32-byte Nano seed.
+//    private_key = Blake2b-256(seed || index_u32_be)
+//
+// 2. `nano_address_from_mnemonic_ledger` (Ledger / BIP44 style)
+//    BIP39 seed (PBKDF2) -> SLIP-0010 ed25519 at m/44'/165'/index'
+//
+// Pick the one matching the wallet the mnemonic came from.
