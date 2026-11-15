@@ -16,6 +16,7 @@ zeroize = "1.9.1"
 
 
 curve25519-dalek = "5"
+derive_more = { version = "2.1.1", features = ["display"] }
 
 
 # hmac = "0.12"

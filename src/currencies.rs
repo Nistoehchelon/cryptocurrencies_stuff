@@ -1,7 +1,7 @@
 use crate::atomic_unit::{AtomicUnit, CryptocurrencyConfig};
 
 pub type CryptoAtomicUnitRaw = u128;
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, derive_more::Display)]
 pub struct CryptoAtomicUnit(pub CryptoAtomicUnitRaw);
 
 impl CryptoAtomicUnit {
