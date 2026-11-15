@@ -4,6 +4,11 @@ pub type CryptoAtomicUnitRaw = u128;
 #[derive(Clone, Debug)]
 pub struct CryptoAtomicUnit(pub CryptoAtomicUnitRaw);
 
+impl CryptoAtomicUnit {
+    pub fn as_raw(&self) -> CryptoAtomicUnitRaw {
+        self.0
+    }
+}
 #[derive(Clone, Debug)]
 pub struct XMR;
 impl CryptocurrencyConfig for XMR {
