@@ -23,3 +23,5 @@ impl CryptocurrencyConfig for XNO {
     const ATOMIC_PER_UNIT: u128 = 10u128.pow(30);
     const SYMBOL: &'static str = "XNO";
 }
+
+pub type XNOAtomicUnit = AtomicUnit<XNO>;
