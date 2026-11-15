@@ -26,10 +26,42 @@ use blake2::digest::{Update, VariableOutput};
 use blake2::{Blake2b, Blake2b512, Blake2bVar, Digest};
 use curve25519_dalek::constants::ED25519_BASEPOINT_POINT;
 use curve25519_dalek::scalar::Scalar;
-use hmac::{Hmac, Mac};
-use sha2::Sha512;
+//use hmac::{Hmac, Mac};
+//use sha2::Sha512;
+
+use crate::derive_nano::NanoAddressFromMnemonicError::{EntropyToSeedError, MnemonicParseError};
 
 const NANO_ALPHABET: &[u8; 32] = b"13456789abcdefghijkmnopqrstuwxyz";
+
+#[derive(Debug, Clone)]
+pub enum NanoAddressFromMnemonicError {
+    MnemonicParseError(String),
+    EntropyToSeedError(String),
+}
+
+/// Nault/Natrium-style: mnemonic entropy is the Nano seed (needs 24 words).
+pub fn nano_address_from_mnemonic(
+    mnemonic: &str,
+    index: u32,
+) -> Result<String, NanoAddressFromMnemonicError> {
+    let m = Mnemonic::parse(mnemonic)
+        .map_err(|e| MnemonicParseError(format!("invalid mnemonic: {e}")))?;
+    let entropy = m.to_entropy();
+    let seed: [u8; 32] = entropy.as_slice().try_into().map_err(|e| {
+        EntropyToSeedError(format!(
+            "{e:#?}. Nano seeds need a 24-word mnemonic (32 bytes of entropy)"
+        ))
+    })?;
+
+    let mut hasher = Blake2b::<U32>::new();
+    Digest::update(&mut hasher, seed);
+    Digest::update(&mut hasher, index.to_be_bytes());
+    let private_key: [u8; 32] = hasher.finalize().into();
+
+    Ok(address_from_public_key(&public_key_from_private(
+        &private_key,
+    )))
+}
 
 /// Nano-flavoured ed25519: the secret is hashed with Blake2b-512 (not SHA-512).
 fn public_key_from_private(private_key: &[u8; 32]) -> [u8; 32] {
@@ -78,25 +110,7 @@ fn address_from_public_key(pk: &[u8; 32]) -> String {
     format!("nano_{body}{checksum}")
 }
 
-/// Nault/Natrium-style: mnemonic entropy is the Nano seed (needs 24 words).
-pub fn nano_address_from_mnemonic(mnemonic: &str, index: u32) -> Result<String, String> {
-    let m = Mnemonic::parse(mnemonic).map_err(|e| format!("invalid mnemonic: {e}"))?;
-    let entropy = m.to_entropy();
-    let seed: [u8; 32] = entropy
-        .as_slice()
-        .try_into()
-        .map_err(|_| "Nano seeds need a 24-word mnemonic (32 bytes of entropy)".to_string())?;
-
-    let mut hasher = Blake2b::<U32>::new();
-    Digest::update(&mut hasher, seed);
-    Digest::update(&mut hasher, index.to_be_bytes());
-    let private_key: [u8; 32] = hasher.finalize().into();
-
-    Ok(address_from_public_key(&public_key_from_private(
-        &private_key,
-    )))
-}
-
+// TODO: Fix if I ever want this, currently broken.
 // /// Ledger-style: BIP39 seed + SLIP-0010 ed25519, path m/44'/165'/index'.
 // /// Works with 12 or 24 words. `passphrase` is the optional BIP39 passphrase.
 // pub fn nano_address_from_mnemonic_ledger(
