@@ -1,5 +1,5 @@
 pub trait CryptocurrencyConfig {
-    const ATOMIC_PER_UNIT: u64;
+    const ATOMIC_PER_UNIT: u128;
     const SYMBOL: &'static str;
     fn precision() -> usize {
         Self::ATOMIC_PER_UNIT.ilog10() as usize
@@ -7,14 +7,14 @@ pub trait CryptocurrencyConfig {
 }
 
 #[derive(Clone, Debug)]
-pub struct AtomicUnit<C: CryptocurrencyConfig>(u64, std::marker::PhantomData<C>);
+pub struct AtomicUnit<C: CryptocurrencyConfig>(u128, std::marker::PhantomData<C>);
 
 impl<C: CryptocurrencyConfig> AtomicUnit<C> {
-    pub fn from_atomic(a: u64) -> Self {
+    pub fn from_atomic(a: u128) -> Self {
         Self(a, std::marker::PhantomData)
     }
 
-    pub fn as_atomic(&self) -> u64 {
+    pub fn as_atomic(&self) -> u128 {
         self.0
     }
 
