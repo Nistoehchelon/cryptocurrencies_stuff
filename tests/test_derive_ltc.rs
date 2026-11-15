@@ -1,6 +1,6 @@
 // cargo test -- --nocapture to show println!()
 
-use cryptocurrencies_stuff::derive_ltc::derive_ltc_bip84_address;
+use cryptocurrencies_stuff::ltc_get_address::get_address_from_mnemonic_and_index;
 
 #[test]
 pub fn test_ltc() {
@@ -12,7 +12,7 @@ pub fn test_ltc() {
     for li in (0..=3).skip(1) {
         println!("loop {li}");
         loop {
-            let Ok(addr) = derive_ltc_bip84_address(mnemonic, index) else {
+            let Ok(addr) = get_address_from_mnemonic_and_index(mnemonic, index) else {
                 assert_eq!(1, 2);
                 break;
             };

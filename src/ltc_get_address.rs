@@ -5,7 +5,6 @@ use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 use std::str::FromStr;
 
-
 /// Derives a BIP84 (native SegWit / P2WPKH) Litecoin address.
 ///
 /// Derivation path: m/84'/2'/0'/0/{index}
@@ -16,9 +15,9 @@ use std::str::FromStr;
 ///   - Index    {index}
 ///
 /// The resulting address uses the "ltc" bech32 HRP (Litecoin mainnet).
-pub fn derive_ltc_bip84_address(master_seed: &str, index: u64) -> Result<String, String> {
+pub fn get_address_from_mnemonic_and_index(mnemonic_str: &str, index: u64) -> Result<String, String> {
     // 1. Parse mnemonic and derive BIP39 seed (no passphrase)
-    let mnemonic = Mnemonic::from_str(master_seed).map_err(|e| format!("Invalid mnemonic: {e}"))?;
+    let mnemonic = Mnemonic::from_str(mnemonic_str).map_err(|e| format!("Invalid mnemonic: {e}"))?;
     let seed = mnemonic.to_seed("");
 
     // 2. Build the master extended private key from the 64-byte seed

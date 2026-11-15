@@ -9,7 +9,7 @@ use curve25519_dalek::scalar::Scalar;
 //use hmac::{Hmac, Mac};
 //use sha2::Sha512;
 
-use crate::derive_nano::NanoAddressFromMnemonicError::{EntropyToSeedError, MnemonicParseError};
+use crate::xno_get_address::NanoAddressFromMnemonicError::{EntropyToSeedError, MnemonicParseError};
 
 const NANO_ALPHABET: &[u8; 32] = b"13456789abcdefghijkmnopqrstuwxyz";
 
@@ -20,7 +20,7 @@ pub enum NanoAddressFromMnemonicError {
 }
 
 /// Nault/Natrium-style: mnemonic entropy is the Nano seed (needs 24 words).
-pub fn nano_address_from_mnemonic(
+pub fn get_address_from_mnemonic_and_index(
     mnemonic: &str,
     index: u32,
 ) -> Result<String, NanoAddressFromMnemonicError> {
@@ -154,7 +154,7 @@ mod tests {
         let index: u32 = std::env::var("INDEX").unwrap().parse().unwrap();
         let mut i = 0;
         while i < 10 {
-            let addr = nano_address_from_mnemonic(&mnemonic, index + i).unwrap();
+            let addr = get_address_from_mnemonic_and_index(&mnemonic, index + i).unwrap();
             tracing::debug!("Addr: {addr}");
             i = i + 1;
         }
