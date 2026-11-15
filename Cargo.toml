@@ -11,11 +11,11 @@ ripemd = "0.2"
 bech32 = "0.12.0"
 serde = { version = "1.0.229", features = ["derive"] }
 anyhow = "1.0.104"
-blake2 = "0.10.0"
+blake2 = "0.11.0"
 zeroize = "1.9.1"
 
 
-curve25519-dalek = "4"
+curve25519-dalek = "5"
 
 
 # hmac = "0.12"
