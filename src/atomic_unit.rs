@@ -1,10 +1,12 @@
+use ruint::aliases::U256;
+
 use crate::currencies::CurrencyAtomicUnit;
 
 pub trait CurrencyConfig {
     const ATOMIC_UNITS_PER_ONE_WHOLE: CurrencyAtomicUnit;
     const SYMBOL: &'static str;
     fn precision() -> usize {
-        Self::ATOMIC_UNITS_PER_ONE_WHOLE.0.ilog10() as usize
+        Self::ATOMIC_UNITS_PER_ONE_WHOLE.0.to_string().len() - 1
     }
 }
 
@@ -24,7 +26,7 @@ impl<C: CurrencyConfig> AtomicUnit<C> {
         let whole = self.0.0 / C::ATOMIC_UNITS_PER_ONE_WHOLE.0;
         let fractional = self.0.0 % C::ATOMIC_UNITS_PER_ONE_WHOLE.0;
 
-        if fractional == 0 {
+        if fractional == U256::ZERO {
             return whole.to_string();
         }
 
@@ -65,14 +67,14 @@ impl<C: CurrencyConfig> AtomicUnit<C> {
         self.0
             .0
             .checked_sub(rhs.0.0)
-            .map(|arg0: u128| AtomicUnit::from_atomic(CurrencyAtomicUnit(arg0)))
+            .map(|arg0: U256| AtomicUnit::from_atomic(CurrencyAtomicUnit(arg0)))
             .ok_or(ArithmeticError::Overflow)
     }
     pub fn checked_mul_result(self, rhs: Self) -> anyhow::Result<Self, ArithmeticError> {
         self.0
             .0
             .checked_mul(rhs.0.0)
-            .map(|arg0: u128| AtomicUnit::from_atomic(CurrencyAtomicUnit(arg0)))
+            .map(|arg0: U256| AtomicUnit::from_atomic(CurrencyAtomicUnit(arg0)))
             .ok_or(ArithmeticError::Overflow)
     }
 }

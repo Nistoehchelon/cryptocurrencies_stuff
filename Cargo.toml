@@ -17,6 +17,8 @@ zeroize = "1.9.1"
 
 curve25519-dalek = "5"
 derive_more = { version = "2.1.1", features = ["display"] }
+ruint = { version = "1.21.1", features = ["serde"] }
+ruint-macro = "1.2.1"
 
 
 # hmac = "0.12"
